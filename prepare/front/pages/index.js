@@ -39,11 +39,17 @@ const Home = () => {
   return (
     <AppLayout>
       {me && <PostForm />}
+<<<<<<< HEAD
       {me && mainPosts.map((post, i) => <PostCard key={post.id} post={post} />)}
       <div
         ref={hasMorePosts && !loadPostsLoading ? ref : undefined}
         style={{ height: 10 }}
       />
+=======
+      {mainPosts.map((post, i) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+>>>>>>> c9c21a7... 좋아요 댓글 갯수
     </AppLayout>
   );
 };
