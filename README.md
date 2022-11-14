@@ -6,9 +6,9 @@
   <br>
 </p>
 
-목차
+## 📒 목차
 
-## 프로젝트 소개
+## 🔖 소개
 
 <p align="justify">
 프로젝트 개요/동기
@@ -20,11 +20,14 @@ GIF Images
 
 <br>
 
-## 기술 스택
+## 📚 기술스택
 
-| JavaScript | TypeScript |  React   |  Node   |
-| :--------: | :--------: | :------: | :-----: |
-|   ![js]    |   ![ts]    | ![react] | ![node] |
+| 분야           | 사용 기술                      | 비고 |
+| -------------- |----------------------------| ---- |
+| FrontEnd       | React, React-Query, javascript |
+| BackEnd        | Express                    |
+| Database       | MySql                      |
+| Cloud Services | AWS EC2, AWS S3            |
 
 <br>
 
