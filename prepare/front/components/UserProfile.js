@@ -1,16 +1,31 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Avatar, Button, Card } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutRequestAction } from '~/reducers/user';
 import Link from 'next/link';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { loadMyInfoAPI, logOutAPI } from '~/api/users';
 
 const UserProfile = () => {
-  const dispatch = useDispatch();
-  const { me, logOutLoading } = useSelector((state) => state.user);
-
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+  const mutation = useMutation(logOutAPI, {
+    onMutate: () => {
+      setLoading(true);
+    },
+    onError: (error) => {
+      alert(error.response?.data);
+    },
+    onSuccess: () => {
+      queryClient.setQueryData([queryKeys.users], null);
+    },
+    onSettled: () => {
+      setLoading(false);
+    },
+  });
   const onLogOut = useCallback(() => {
-    dispatch(logoutRequestAction());
-  }, []);
+    mutation.mutate();
+  }, [mutation]);
 
   return (
     <Card
@@ -54,7 +69,7 @@ const UserProfile = () => {
           </Link>
         }
       />
-      <Button onClick={onLogOut} loading={logOutLoading}>
+      <Button onClick={onLogOut} loading={loading}>
         로그아웃
       </Button>
     </Card>

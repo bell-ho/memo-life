@@ -1,36 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, Card, List } from 'antd';
 import { StopOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
-import { REMOVE_FOLLOWER_REQUEST, UNFOLLOW_REQUEST } from '~/reducers/user';
-import useSWR from 'swr';
-import { fetcher } from '~/hook/fetcher';
+import { removeFollowerAPI, unfollowAPI } from '~/api/follows';
 
 const FollowList = ({ header, data, onClickMore, loading }) => {
-  const dispatch = useDispatch();
-  const [followersLimit, setFollowersLimit] = useState(3);
-  const [followingsLimit, setFollowingsLimit] = useState(3);
-  const {
-    data: followingsData,
-    error: followingError,
-    mutate: mutateFollowing,
-  } = useSWR(`/user/followings?limit=${followingsLimit}`, fetcher);
-
-  const {
-    data: followersData,
-    error: followerError,
-    mutate: mutateFollower,
-  } = useSWR(`/user/followers?limit=${followersLimit}`, fetcher);
-
   const onCancel = (id) => () => {
     if (header === '팔로잉') {
-      dispatch({ type: UNFOLLOW_REQUEST, data: id });
-      mutateFollowing((prev) => prev.filter((data) => data.id !== id));
-    } else {
-      dispatch({ type: REMOVE_FOLLOWER_REQUEST, data: id });
-      mutateFollower((prev) => prev.filter((data) => data.id !== id));
+      unfollowAPI(id);
     }
+    removeFollowerAPI(id);
   };
   return (
     <List

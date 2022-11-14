@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { Form, Input } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import { CHANGE_NICKNAME_REQUEST } from '~/reducers/user';
 import useInput from '~/hook/useInput';
+import { useQuery } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { changeNicknameAPI, loadMyInfoAPI } from '~/api/users';
 
 const NicknameEditForm = () => {
   const style = useMemo(() => ({
@@ -10,15 +11,12 @@ const NicknameEditForm = () => {
     border: '1px solid #d9d9d9',
     padding: '20px',
   }));
-  const { me } = useSelector((state) => state.user);
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+
   const [nickname, onChangeNickname] = useInput(me?.nickname || '');
 
-  const dispatch = useDispatch();
   const onSubmit = useCallback(() => {
-    dispatch({
-      type: CHANGE_NICKNAME_REQUEST,
-      data: nickname,
-    });
+    changeNicknameAPI(nickname);
   }, [nickname]);
 
   return (

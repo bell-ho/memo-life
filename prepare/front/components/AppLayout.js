@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { Col, Input, Menu, Row } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
-import { useSelector } from 'react-redux';
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import Router, { useRouter } from 'next/router';
 import useInput from '~/hook/useInput';
+import { useQuery } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { loadMyInfoAPI } from '~/api/users';
 
 const SearchInput = styled(Input.Search)`
   vertical-align: middle;
@@ -33,7 +35,7 @@ const Global = createGlobalStyle`
 
 const AppLayout = ({ children }) => {
   const router = useRouter();
-  const { me } = useSelector((state) => state.user);
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
 
   const [searchInput, onChangeSearchInput] = useInput('');
 

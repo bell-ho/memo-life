@@ -1,14 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import {
-  Avatar,
-  Button,
-  Card,
-  Comment,
-  List,
-  Popover,
-  Space,
-  Tooltip,
-} from 'antd';
+import { Avatar, Button, Card, Comment, List, Popover, Space } from 'antd';
 import {
   EllipsisOutlined,
   LikeOutlined,
@@ -16,23 +7,24 @@ import {
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PostImages from '~/components/PostImages';
 import CommentForm from '~/components/CommentForm';
 import PostCardContent from '~/components/PostCardContent';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  LIKE_POST_REQUEST,
-  REMOVE_POST_REQUEST,
-  RETWEET_REQUEST,
-  UNLIKE_POST_REQUEST,
-  UPDATE_POST_REQUEST,
-} from '~/reducers/post';
 import FollowButton from '~/components/FollowButton';
 import Link from 'next/link';
 import moment from 'moment';
 import PostImagesSlick from '~/components/PostImagesSlick';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { loadMyInfoAPI } from '~/api/users';
+import {
+  likePostAPI,
+  removePostAPI,
+  retweetAPI,
+  unlikePostAPI,
+  updatePostAPI,
+} from '~/api/posts';
 
 moment.locale('ko');
 
@@ -44,48 +36,56 @@ const IconText = ({ icon, text }) => (
 );
 
 const PostCard = ({ post }) => {
-  const dispatch = useDispatch();
-  const [commentFormOpen, setCommentFormOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+
+  const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
-  const { removePostLoading } = useSelector((state) => state.post);
-  const id = useSelector((state) => state.user.me?.id);
+  const likeMutation = useMutation([queryKeys.posts, post.id], likePostAPI, {
+    onMutate() {
+      if (!me) return;
+      queryClient.setQueryData([queryKeys.posts], (data) => {
+        const found = data?.pages.flat().find((v) => v.id === post.id);
+        if (found) {
+          found.Likers.push({ id: me.id });
+        }
+        return {
+          pageParams: data?.pageParams || [],
+          pages: data?.pages || [],
+        };
+      });
+    },
+    onSettled() {
+      queryClient.refetchQueries([queryKeys.posts]);
+    },
+  });
 
-  const onLike = useCallback(() => {
-    if (!id) {
-      return alert('로그인이 필요합니다.');
-    }
-    dispatch({ type: LIKE_POST_REQUEST, data: post.id });
-  }, [id, post.id]);
-
-  const onUnLike = useCallback(() => {
-    if (!id) {
-      return alert('로그인이 필요합니다.');
-    }
-    dispatch({ type: UNLIKE_POST_REQUEST, data: post.id });
-  }, [id, post.id]);
-
-  const onToggleComment = useCallback(() => {
-    setCommentFormOpen((prev) => !prev);
-  }, []);
-
-  const onRemovePost = useCallback(() => {
-    if (!id) {
-      return alert('로그인이 필요합니다.');
-    }
-    dispatch({
-      type: REMOVE_POST_REQUEST,
-      data: post.id,
-    });
-  }, [id, post.id]);
-
-  const onRetweet = useCallback(() => {
-    if (!id) {
-      return alert('로그인이 필요합니다.');
-    }
-
-    dispatch({ type: RETWEET_REQUEST, data: post.id });
-  }, [id, post.id]);
+  const unlikeMutation = useMutation(
+    [queryKeys.posts, post.id],
+    unlikePostAPI,
+    {
+      onMutate() {
+        if (!me) return;
+        queryClient.setQueryData([queryKeys.posts], (data) => {
+          const found = data?.pages.flat().find((v) => v.id === post.id);
+          if (found) {
+            const index = found.Likers.findIndex((v) => v.id === me.id);
+            found.Likers.splice(index, 1);
+          }
+          return {
+            pageParams: data?.pageParams || [],
+            pages: data?.pages || [],
+          };
+        });
+      },
+      onSettled() {
+        queryClient.refetchQueries([queryKeys.posts]);
+      },
+    },
+  );
 
   const onClickUpdate = useCallback(() => {
     setEditMode(true);
@@ -96,31 +96,53 @@ const PostCard = ({ post }) => {
   }, []);
 
   const onChangePost = useCallback(
-    (editText) => () => {
-      dispatch({
-        type: UPDATE_POST_REQUEST,
-        data: { PostId: post.id, content: editText },
+    (editText) => {
+      return updatePostAPI({
+        PostId: post.id,
+        content: editText,
       });
     },
     [post],
   );
-  const linked = post.Likers?.find((v) => v.id === id);
 
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
-  const [action, setAction] = useState(null);
+  const onLike = useCallback(() => {
+    if (!me?.id) {
+      return alert('로그인이 필요합니다.');
+    }
+    likeMutation.mutate(post?.id);
+  }, [me, post?.id, likeMutation]);
 
-  const like = () => {
-    setLikes(1);
-    setDislikes(0);
-    setAction('liked');
-  };
+  const onUnLike = useCallback(() => {
+    if (!me?.id) {
+      return alert('로그인이 필요합니다.');
+    }
+    unlikeMutation.mutate(post?.id);
+  }, [me, post?.id, unlikeMutation]);
 
-  const dislike = () => {
-    setLikes(0);
-    setDislikes(1);
-    setAction('disliked');
-  };
+  const onToggleComment = useCallback(() => {
+    setCommentFormOpened((prev) => !prev);
+  }, []);
+
+  const onRemovePost = useCallback(() => {
+    if (!me?.id) {
+      return alert('로그인이 필요합니다.');
+    }
+    setLoading(true);
+    removePostAPI(post.id).finally(() => {
+      setLoading(false);
+    });
+  }, [me?.id, post.id]);
+
+  const onRetweet = useCallback(() => {
+    if (!me?.id) {
+      return alert('로그인이 필요합니다.');
+    }
+    retweetAPI(post.id).catch((error) => {
+      alert(error.response.data);
+    });
+  }, [me?.id, post.id]);
+
+  const liked = post.Likers.find((v) => me?.id && v.id === me.id);
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -131,7 +153,7 @@ const PostCard = ({ post }) => {
         }
         actions={[
           <RetweetOutlined key="retweet" onClick={onRetweet} />,
-          linked ? (
+          liked ? (
             <div onClick={onUnLike}>
               <LikeTwoTone key="heart" style={{ marginRight: 3 }} />
               {`${post.Likers.length}`}
@@ -151,14 +173,14 @@ const PostCard = ({ post }) => {
             content={
               !post?.hide && (
                 <Button.Group>
-                  {id && post.User.id === id ? (
+                  {me?.id && post.User.id === me?.id ? (
                     <>
                       {!post.RetweetId && (
                         <Button onClick={onClickUpdate}>수정</Button>
                       )}
                       <Button
                         type="danger"
-                        loading={removePostLoading}
+                        loading={loading}
                         onClick={onRemovePost}
                       >
                         삭제
@@ -177,7 +199,7 @@ const PostCard = ({ post }) => {
         title={
           post.RetweetId ? `${post.User.nickname}님이 리트윗했습니다.` : null
         }
-        extra={id && <FollowButton post={post} />}
+        extra={me?.id && <FollowButton post={post} />}
       >
         {post.RetweetId && post.Retweet ? ( //리트윗 게시물
           <Card
@@ -243,72 +265,30 @@ const PostCard = ({ post }) => {
           </>
         )}
       </Card>
-      {commentFormOpen && (
-        <>
-          <div
-            id="scrollableDiv"
-            style={{
-              height: 200,
-              overflow: 'auto',
-              padding: '0 16px',
-              border: '1px solid rgba(140, 140, 140, 0.35)',
-            }}
-          >
-            <InfiniteScroll
-              dataLength={post?.Comments.length}
-              // next={loadMoreData}
-              hasMore={post?.Comments.length < 10}
-              // loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-              scrollableTarget="scrollableDiv"
-            >
-              <List
-                // header={`${post.Comments.length}개의 댓글`}
-                itemLayout="horizontal"
-                dataSource={post?.Comments}
-                renderItem={(item) => {
-                  return (
-                    <li>
-                      <Comment
-                        author={item?.User?.nickname}
-                        avatar={
-                          <Link href={`/user/${item.User.id}`} prefetch={false}>
-                            <a>
-                              <Avatar>{item?.User?.nickname[0]}</Avatar>
-                            </a>
-                          </Link>
-                        }
-                        content={item.content
-                          .split(/(#[^\s#]+)/g)
-                          .map((v, i) => {
-                            if (v.match(/(#[^\s#]+)/g)) {
-                              return (
-                                <Link
-                                  href={`/hashtag/${v.slice(1)}`}
-                                  prefetch={false}
-                                  key={i}
-                                >
-                                  <a>{v}</a>
-                                </Link>
-                              );
-                            }
-                            return v;
-                          })}
-                        datetime={
-                          <Tooltip
-                            title={moment().format('YYYY-MM-DD HH:mm:ss')}
-                          >
-                            <span>{moment(item.createdAt).fromNow()}</span>
-                          </Tooltip>
-                        }
-                      />
-                    </li>
-                  );
-                }}
-              />
-            </InfiniteScroll>
-          </div>
+      {commentFormOpened && (
+        <div>
           <CommentForm post={post} />
-        </>
+          <List
+            header={`${post.Comments.length}개의 댓글`}
+            itemLayout="horizontal"
+            dataSource={post.Comments}
+            renderItem={(item) => (
+              <li>
+                <Comment
+                  author={item.User.nickname}
+                  avatar={
+                    <Link href={`/user/${item.User.id}`} prefetch={false}>
+                      <a>
+                        <Avatar>{item.User.nickname?.[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
+                  content={item.content}
+                />
+              </li>
+            )}
+          />
+        </div>
       )}
     </div>
   );

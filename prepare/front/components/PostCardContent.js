@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { Button, Input } from 'antd';
-import { useSelector } from 'react-redux';
 
 const { TextArea } = Input;
 
@@ -12,11 +11,8 @@ const PostCardContent = ({
   onCancelUpdate,
   onChangePost,
 }) => {
+  const [loading, setLoading] = useState(false);
   const [editText, setEditText] = useState(postData);
-
-  const { updatePostLoading, updatePostDone } = useSelector(
-    (state) => state.post,
-  );
 
   const onChangeText = useCallback(
     (e) => {
@@ -25,11 +21,16 @@ const PostCardContent = ({
     [editText],
   );
 
-  useEffect(() => {
-    if (updatePostDone) {
-      onCancelUpdate();
-    }
-  }, [updatePostDone]);
+  const onChange = useCallback(() => {
+    setLoading(true);
+    onChangePost(editText)
+      .then(() => {
+        onCancelUpdate();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [editText, onCancelUpdate, onChangePost]);
 
   return (
     <div>
@@ -37,12 +38,10 @@ const PostCardContent = ({
         <>
           <TextArea value={editText} onChange={onChangeText} />
           <Button.Group>
-            <Button onClick={onChangePost(editText)}>수정</Button>
-            <Button
-              type="danger"
-              loading={updatePostLoading}
-              onClick={onCancelUpdate}
-            >
+            <Button loading={loading} onClick={onChange}>
+              수정
+            </Button>
+            <Button type="danger" onClick={onCancelUpdate}>
               취소
             </Button>
           </Button.Group>

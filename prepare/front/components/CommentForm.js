@@ -1,40 +1,34 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { ADD_COMMENT_REQUEST, addComment } from '~/reducers/post';
 import useInput from '../hook/useInput';
+import { useQuery } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { loadMyInfoAPI } from '~/api/users';
+import { addCommentAPI } from '~/api/comments';
 
 const CommentForm = ({ post }) => {
-  const dispatch = useDispatch();
-  const { me } = useSelector((state) => state.user);
-  const { addCommentDone, addCommentError } = useSelector(
-    (state) => state.post,
-  );
+  const [loading, setLoading] = useState(false);
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+
   const [commentText, onChangeCommentText, setCommentText] = useInput('');
 
-  useEffect(() => {
-    if (addCommentDone) {
-      setCommentText('');
-    }
-  }, [addCommentDone]);
-
   const onSubmitComment = useCallback(() => {
-    if (!commentText || commentText === '') {
-      alert('문자를 입력해주세요.');
-      return;
+    if (me) {
+      if (!commentText || commentText === '') {
+        alert('문자를 입력해주세요.');
+        return;
+      }
+      setLoading(true);
+      addCommentAPI({ content: commentText, postId: post.id, userId: me.id })
+        .then(() => {
+          setCommentText('');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
-    dispatch({
-      type: ADD_COMMENT_REQUEST,
-      data: { content: commentText, postId: post.id, userId: me?.id },
-    });
   }, [commentText, me?.id]);
-
-  useEffect(() => {
-    if (addCommentError) {
-      alert('도배 방지');
-    }
-  }, [addCommentError]);
 
   return (
     <Form onFinish={onSubmitComment}>

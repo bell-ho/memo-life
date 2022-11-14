@@ -1,45 +1,61 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { Button, Form, Input } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  ADD_POST_REQUEST,
-  LOAD_POSTS_REQUEST,
-  REMOVE_IMAGE,
-  UPLOAD_IMAGES_REQUEST,
-} from '~/reducers/post';
 import useInput from '~/hook/useInput';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
+import { loadMyInfoAPI } from '~/api/users';
+import { addPostAPI, uploadImagesAPI } from '~/api/posts';
 
 const PostForm = () => {
-  const dispatch = useDispatch();
-  const { imagePaths, addPostDone, addPostLoading, addPostError } = useSelector(
-    (state) => state.post,
-  );
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(false);
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+
   const [text, onChangeText, setText] = useInput('');
+  const [imagePaths, setImagePaths] = useState([]);
+
+  const mutation = useMutation([queryKeys.posts], addPostAPI, {
+    onMutate() {
+      if (!me) return;
+      setLoading(true);
+      queryClient.setQueryData([queryKeys.posts], (data) => {
+        const newPages = data?.pages.slice() || [];
+        newPages[0].unshift({
+          id: 0,
+          User: me,
+          content: text,
+          Images: imagePaths?.map((v, i) => ({ src: v, id: i })),
+          Comments: [],
+          Likers: [],
+          createdAt: new Date().toString(),
+        });
+        return {
+          pageParams: data?.pageParams || [],
+          pages: newPages,
+        };
+      });
+    },
+    onSuccess() {
+      setText('');
+      setImagePaths([]);
+      queryClient.refetchQueries([queryKeys.posts]);
+    },
+    onSettled() {
+      setLoading(false);
+    },
+  });
 
   const onSubmit = useCallback(() => {
     if (!text || !text.trim()) {
-      return alert('게시글을 작성하세요');
+      return alert('게시글을 작성하세요.');
     }
     const formData = new FormData();
     imagePaths.forEach((p) => {
       formData.append('image', p);
     });
     formData.append('content', text);
-    return dispatch({ type: ADD_POST_REQUEST, data: formData });
-  }, [text, imagePaths]);
-
-  useEffect(() => {
-    if (addPostDone) {
-      setText('');
-    }
-  }, [addPostDone]);
-
-  useEffect(() => {
-    //도배 방지
-    if (addPostError) {
-      alert(addPostError);
-    }
-  }, [addPostError]);
+    mutation.mutate(formData);
+  }, [mutation, text, imagePaths]);
 
   const imageInput = useRef();
   const onClickImageUpload = useCallback(() => {
@@ -54,15 +70,16 @@ const PostForm = () => {
         imageFormData.append('image', f);
       }
     });
-    dispatch({
-      type: UPLOAD_IMAGES_REQUEST,
-      data: imageFormData,
+    uploadImagesAPI(imageFormData).then((result) => {
+      setImagePaths((prev) => prev.concat(result));
     });
   }, []);
 
   const onRemoveImage = useCallback(
     (index) => () => {
-      dispatch({ type: REMOVE_IMAGE, data: index });
+      setImagePaths((prev) => {
+        return prev.filter((v, i) => i !== index);
+      });
     },
     [],
   );
@@ -94,7 +111,7 @@ const PostForm = () => {
         <Button
           type="primary"
           style={{ float: 'right' }}
-          loading={addPostLoading}
+          loading={loading}
           htmlType="submit"
         >
           등록
