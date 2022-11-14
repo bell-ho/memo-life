@@ -3,13 +3,23 @@ import { Button, Card, List } from 'antd';
 import { StopOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { removeFollowerAPI, unfollowAPI } from '~/api/follows';
+import { useQueryClient } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
 
 const FollowList = ({ header, data, onClickMore, loading }) => {
+  const queryClient = useQueryClient();
   const onCancel = (id) => () => {
     if (header === '팔로잉') {
-      unfollowAPI(id);
+      unfollowAPI(id).then(() => {
+        queryClient.invalidateQueries([queryKeys.followings]);
+        queryClient.invalidateQueries([queryKeys.users]);
+      });
+      return;
     }
-    removeFollowerAPI(id);
+    removeFollowerAPI(id).then(() => {
+      queryClient.invalidateQueries([queryKeys.followers]);
+      queryClient.invalidateQueries([queryKeys.users]);
+    });
   };
   return (
     <List

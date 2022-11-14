@@ -146,9 +146,11 @@ export const getServerSideProps = async (context) => {
   const data = await loadMyInfoAPI();
   if (!data) {
     return {
-      redirect: {
-        destination: '/',
-        permanent: false,
+      props: {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
       },
     };
   }

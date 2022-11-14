@@ -72,7 +72,7 @@ const PostCard = ({ post }) => {
         queryClient.setQueryData([queryKeys.posts], (data) => {
           const found = data?.pages.flat().find((v) => v.id === post.id);
           if (found) {
-            const index = found.Likers.findIndex((v) => v.id === me.id);
+            const index = found.Likers.findIndex((v) => v.id === me?.id);
             found.Likers.splice(index, 1);
           }
           return {
@@ -128,18 +128,26 @@ const PostCard = ({ post }) => {
       return alert('로그인이 필요합니다.');
     }
     setLoading(true);
-    removePostAPI(post.id).finally(() => {
-      setLoading(false);
-    });
+    removePostAPI(post.id)
+      .then(() => {
+        queryClient.invalidateQueries([queryKeys.posts]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [me?.id, post.id]);
 
   const onRetweet = useCallback(() => {
     if (!me?.id) {
       return alert('로그인이 필요합니다.');
     }
-    retweetAPI(post.id).catch((error) => {
-      alert(error.response.data);
-    });
+    retweetAPI(post.id)
+      .then(() => {
+        queryClient.invalidateQueries([queryKeys.posts]);
+      })
+      .catch((error) => {
+        alert(error.response.data);
+      });
   }, [me?.id, post.id]);
 
   const liked = post.Likers.find((v) => me?.id && v.id === me.id);

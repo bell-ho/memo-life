@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Form, Input } from 'antd';
 import useInput from '~/hook/useInput';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { queryKeys } from '~/react_query/constants';
 import { changeNicknameAPI, loadMyInfoAPI } from '~/api/users';
 
@@ -12,11 +12,14 @@ const NicknameEditForm = () => {
     padding: '20px',
   }));
   const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
+  const queryClient = useQueryClient();
 
   const [nickname, onChangeNickname] = useInput(me?.nickname || '');
 
   const onSubmit = useCallback(() => {
-    changeNicknameAPI(nickname);
+    changeNicknameAPI(nickname).then(() => {
+      queryClient.invalidateQueries([queryKeys.users]);
+    });
   }, [nickname]);
 
   return (

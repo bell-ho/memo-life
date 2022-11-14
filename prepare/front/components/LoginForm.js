@@ -3,7 +3,6 @@ import { Button, Form, Input, Row } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from '~/hook/useInput';
-import GoogleLoginBtn from '~/components/GoogleLoginBtn';
 import { useMutation, useQueryClient } from 'react-query';
 import { logInAPI } from '~/api/users';
 import { queryKeys } from '~/react_query/constants';
@@ -74,11 +73,6 @@ const LoginForm = () => {
           </a>
         </Link>
       </ButtonWrapper>
-      <Form.Item>
-        <Row justify="center" wrap={false}>
-          <GoogleLoginBtn />
-        </Row>
-      </Form.Item>
     </FormWrapper>
   );
 };

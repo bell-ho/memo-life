@@ -105,18 +105,18 @@ const User = () => {
           ]}
         >
           <Card.Meta
-            avatar={<Avatar>{userInfo.nickname[0]}</Avatar>}
+            avatar={<Avatar>{userInfo.nickname?.[0]}</Avatar>}
             title={userInfo.nickname}
           />
         </Card>
       ) : null}
-      {mainPosts.map((post) => (
+      {mainPosts?.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
-      <div
-        ref={readToLoad ? ref : undefined}
-        style={{ height: 50, backgroundColor: 'yellow' }}
-      />
+      {/*<div*/}
+      {/*  ref={readToLoad ? ref : undefined}*/}
+      {/*  style={{ height: 50, backgroundColor: 'yellow' }}*/}
+      {/*/>*/}
     </AppLayout>
   );
 };

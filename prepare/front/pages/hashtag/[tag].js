@@ -44,10 +44,10 @@ const Hashtag = () => {
       {mainPosts.map((c) => (
         <PostCard key={c.id} post={c} />
       ))}
-      <div
-        ref={readToLoad ? ref : undefined}
-        style={{ height: 50, backgroundColor: 'yellow' }}
-      />
+      {/*<div*/}
+      {/*  ref={readToLoad ? ref : undefined}*/}
+      {/*  style={{ height: 50, backgroundColor: 'yellow' }}*/}
+      {/*/>*/}
     </AppLayout>
   );
 };

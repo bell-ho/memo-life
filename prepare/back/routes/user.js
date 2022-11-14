@@ -1,11 +1,13 @@
 const express = require("express");
-const { User, Post, Comment, Image } = require("../models");
-const router = express.Router();
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 const { Op } = require("sequelize");
-const frontUrl = require("../config/frontUrl");
+
+const { User, Post, Comment, Image } = require("../models");
+const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
+
+const router = express.Router();
+
 router.get("/", async (req, res, next) => {
   try {
     if (req.user) {
@@ -48,8 +50,8 @@ router.get("/followers", isLoggedIn, async (req, res, next) => {
       res.status(403).send("존재 하지 않는 사용자 입니다.");
     }
     const followers = await user.getFollowers({
-      attributes: ["id", "nickname"],
-      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.page, 10) * 10,
+      limit: parseInt(req.query.limit, 10) || 3,
     });
     res.status(200).json(followers);
   } catch (e) {
@@ -65,8 +67,8 @@ router.get("/followings", isLoggedIn, async (req, res, next) => {
       res.status(403).send("존재 하지 않는 사용자 입니다.");
     }
     const followings = await user.getFollowings({
-      attributes: ["id", "nickname"],
-      limit: parseInt(req.query.limit, 10),
+      offset: parseInt(req.query.page, 10) * 10,
+      limit: parseInt(req.query.limit, 10) || 3,
     });
     res.status(200).json(followings);
   } catch (e) {
@@ -102,7 +104,7 @@ router.get("/:userId", async (req, res, next) => {
 
     if (fullUserWithoutPassword) {
       const data = fullUserWithoutPassword.toJSON();
-      data.Posts = data.Posts.length;
+      data.Posts = data.Posts.length; // 개인정보 침해 예방
       data.Followers = data.Followers.length;
       data.Followings = data.Followings.length;
       res.status(200).json(data);
@@ -119,6 +121,7 @@ router.get("/:userId/posts", async (req, res, next) => {
   try {
     const where = { UserId: req.params.userId };
     if (parseInt(req.query.lastId, 10)) {
+      // 초기 로딩이 아닐 때
       where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; //보다 작은
     }
     const posts = await Post.findAll({
@@ -171,39 +174,6 @@ router.get("/:userId/posts", async (req, res, next) => {
     next(error);
   }
 });
-
-// router.get("/auth/google", function (req, res, next) {
-//   passport.authenticate("google", { scope: ["profile", "email"] })(
-//     req,
-//     res,
-//     next
-//   );
-// });
-
-router.get(
-  "/auth/google/",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-// router.get(
-//   "/auth/google/callback",
-//   passport.authenticate("google", {
-//     failureRedirect: "/",
-//   }),
-//   (req, res, next) => {
-//     res.redirect("/");
-//   }
-// );
-
-router.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/",
-  }),
-  (req, res, next) => {
-    res.redirect(frontUrl);
-  }
-);
 
 //로그인
 router.post("/login", isNotLoggedIn, (req, res, next) => {
@@ -318,7 +288,7 @@ router.patch("/:userId/follow", isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.delete("/:userId/unfollow", isLoggedIn, async (req, res, next) => {
+router.delete("/:userId/follow", isLoggedIn, async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { id: req.params.userId } });
     if (!user) {

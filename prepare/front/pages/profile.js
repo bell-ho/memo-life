@@ -76,14 +76,14 @@ const Profile = () => {
         <NicknameEditForm />
         <FollowList
           header="팔로잉"
-          data={followingsData}
+          data={followingsData ?? []}
           onClickMore={fetchNextFollowings}
           loading={followingsLoading}
           hasNext={hasNextFollowings || false}
         />
         <FollowList
           header="팔로워"
-          data={followersData}
+          data={followersData ?? []}
           onClickMore={fetchNextFollowers}
           loading={followersLoading}
           hasNext={hasNextFollowers || false}
@@ -102,9 +102,11 @@ export const getServerSideProps = async (context) => {
   const data = await loadMyInfoAPI();
   if (!data) {
     return {
-      redirect: {
-        destination: '/',
-        permanent: false,
+      props: {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
       },
     };
   }

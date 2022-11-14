@@ -21,8 +21,10 @@ export const loadHashtagPostsAPI = async (params, lastId) => {
   return data;
 };
 
-export const loadUserPostsAPI = async (lastId) => {
-  const { data } = await axios.get(`/user/${data}/posts?lastId=${lastId || 0}`);
+export const loadUserPostsAPI = async (params, lastId) => {
+  const { data } = await axios.get(
+    `/user/${params}/posts?lastId=${lastId || 0}`,
+  );
   return data;
 };
 
