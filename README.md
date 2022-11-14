@@ -1,96 +1,50 @@
-# react-nodebird
+# 메모라이프
 
-## 0526
+<p align="center">
+  <br>
+  <img src="./images/common/logo-sample.jpeg">
+  <br>
+</p>
 
-_app.js 는 완전 공통에서 사용할것들
+목차
 
-Layout은 컴포넌트끼리 공통으로 사용할것들
+## 프로젝트 소개
 
-웹 head를 변경하려면 next/head 사용
+<p align="justify">
+프로젝트 개요/동기
+</p>
 
-반응형을 만들때 모바일 => 태블릿 => 데스크탑 순서로 만드는게 편함
+<p align="center">
+GIF Images
+</p>
 
-xs: 모바일, sm: 태블릿, md: 작은 데스크탑
+<br>
 
-## 0527
+## 기술 스택
 
-컴포넌트안에 props로 넘겨주는 함수는 useCallback을 써주면 최적화에 도움이 된다 useCallback(()=>{},[])
+| JavaScript | TypeScript |  React   |  Node   |
+| :--------: | :--------: | :------: | :-----: |
+|   ![js]    |   ![ts]    | ![react] | ![node] |
 
-함수를 캐싱하는것이 useCallback, 값을 캐싱하는게 useMemo
+<br>
 
-style에는 {{}} 객체형을 쓰면 안된다 => 객체끼리 비교하면 false이기 때문에, 리액트는 버추얼돔으로 검사를 하면서 어디가 달라졌는지 찾다가 다른객체로 인식하기 때문에 리랜더링함 (실제론 바뀐게 없음)
+## 구현 기능
 
-리랜더링될때 함수형을 다시 실행하는것은 맞지만 useCallback은 캐싱이라 이전것과 지금이 바뀌지 않으면 ([] <= 배열부분) 같은 걸로 판단함
+### 기능 1
 
-## 0530
+### 기능 2
 
-redux적용시 next에서는 _app 에 provider를 생략한다 => 알아서 감싸줌
+### 기능 3
 
-next 개발 모드일때는 메모리정리를 안함 액션히스토리를 다 갖고있고 배포모드일때는 히스토리를 중간 중간 버림
+### 기능 4
 
-reducer : 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수 (불변성을 지키면서)
+<br>
 
-reducer add같은거 만들때 [obj, ...state.~~~] 를 해야 가장 앞에 추가가 됨
+## 후기
 
-styled Global을 사용하여 전역 스타일을 변경할 수 있음
+<!-- Stack Icon Refernces -->
 
-## 0530
-
-제네레이터 중단점이 있는 함수 function* , yield
-
-all : 한번에 다 실행
-
-fork : 함수를 실행
-
-call fork 차이점 : fork 비동기 호출 ,call 동기 호출
-
-put : 디스패치와 비슷
-
-yield : await 과 비슷
-
-take : 일회성 실행 이벤트 리스너 같은거 실행하고 없어짐 while(true) 와 조합하여 씀 ,while take 는 동기적으로 동작하지만 takeEvery 는 비동기로 동작한다
-
-takeEvery : take 의 일회성을 보완
-
-takeLatest : 가장 마지막것을 실행함 응답은 취소할 수 있지만 응답은 취소할 수 없다
-
-dispatch 실행시 해당 saga와 reducer가 거의 동시 실행된다. 그 후 차례대로 실행
-
-등록하는 페이지의 submit 을 누르면 게시글 등을 clear 하는 기능을 사용할 시 서버오류가 나도 clear 되기 때문에 useEffect를 통해 관리하는게 좋다
-
-## 0608
-
-node에서는 import를 쓰지 않고 require를 사용한다.=> front 환경에서는 웹팩이 알아서 import를 require로 바꿔주지만 node는 웹팩을 안쓰기 때문에 처음부터 require를 사용한다
-
-사용하는 라이브러리나 함수가 비동기인지 헷갈릴 땐 공식문서를 참고한다
-
-## 0610
-도메인이 다르면 쿠키도 전달이 안됨 => credentials로 해결
-credentials 가 true 일땐 민감한 정보가 오가는 거니까 origin을 특정해준다.
-
-## 0616
-이미지 업로드를 위한 라이브러리 multer
-,라우터마다 장착하는게 좋다 => form 마다 보내는 양식이 다르기 때문
-
-DB에는 파일의 주소만 갖고있는다 => 파일자체를 가지고있으면 db가 너무 무거워짐, 캐싱도 안됨 => 파일자체는 S3 클라우드에 올려서 CDN 캐싱을 적용하고 => 디비엔 파일을 접근할 수 있는 주소만 저장함
-
-## 0618
-SSR 적용전
-
-브라우저에서 프론트서버에 요청을 하면 프론트 서버는 데이터가 없는 응답을 주고
-
-그 다음, 화면 렌더링이 된 후에 dispatch를 하면 그때서야 프론트에서 백엔드를 요청하여 데이터를 가져오고 브라우저에 넣어줌 (요청이 두번)
-
-SSR 적용시
-
-처음 브라우저가 요청을 하면 바로 데이터를 가져와서 화면에 그려줌 (요청이 한번)
-
-getStaticProps : 언제 접속해도 데이터가 바뀔 일이 없을때 사용 (쓰기 까다로움)
-
-getServerSideProps : 접속할 때 마다 접속한 상황에 따라 화면이 바뀌여야 할 때 사용
-
-# 0702
-saga 코드 react-query로 변경 진행
-
-# 1114
-react-query 컨버팅 완료 버그 수정 중
+[js]: /images/stack/javascript.svg
+[ts]: /images/stack/typescript.svg
+[react]: /images/stack/react.svg
+[node]: /images/stack/node.svg
