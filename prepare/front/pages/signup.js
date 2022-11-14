@@ -4,40 +4,27 @@ import Head from 'next/head';
 import { Button, Checkbox, Form, Input } from 'antd';
 import useInput from '~/hook/useInput';
 import styled from 'styled-components';
-import { LOAD_MY_INFO_REQUEST, SIGN_UP_REQUEST } from '~/reducers/user';
-import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
-import wrapper from '~/store/configureStore';
 import axios from 'axios';
-import { LOAD_POSTS_REQUEST } from '~/reducers/post';
-import { END } from 'redux-saga';
-const SignUp = () => {
-  const dispatch = useDispatch();
-  const ErrorMessage = styled.div`
-    color: red;
-  `;
+import { loadMyInfoAPI, signUpAPI } from '~/api/users';
+import { useQuery } from 'react-query';
+import { queryKeys } from '~/react_query/constants';
 
-  const { signUpLoading, signUpDone, signUpError, me } = useSelector(
-    (state) => state.user,
-  );
+const ErrorMessage = styled.div`
+  color: red;
+`;
+
+const SignUp = () => {
+  const [loading, setLoading] = useState(false);
+
+  const { data: me } = useQuery([queryKeys.users], loadMyInfoAPI);
 
   useEffect(() => {
-    if (me && me.id) {
+    if (me) {
+      console.log('redirects to /');
       Router.replace('/');
     }
-  }, [me && me.id]);
-
-  useEffect(() => {
-    if (signUpDone) {
-      Router.push('/');
-    }
-  }, [signUpDone]);
-
-  useEffect(() => {
-    if (signUpError) {
-      alert(signUpError);
-    }
-  }, [signUpError]);
+  }, [me]);
 
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -68,11 +55,19 @@ const SignUp = () => {
       return setTermError(true);
     }
 
-    dispatch({
-      type: SIGN_UP_REQUEST,
-      data: { email, password, nickname },
-    });
-  }, [password, passwordCheck, term]);
+    setLoading(true);
+
+    signUpAPI({ email, password, nickname })
+      .then(() => {
+        Router.replace('/');
+      })
+      .catch((error) => {
+        alert(error.response.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [email, nickname, password, passwordCheck, term]);
 
   return (
     <AppLayout>
@@ -81,7 +76,7 @@ const SignUp = () => {
       </Head>
       <Form onFinish={onSubmit}>
         <div>
-          <label htmlFor="user-email">아이디</label>
+          <label htmlFor="user-email">이메일</label>
           <br />
           <Input
             name="user-email"
@@ -133,7 +128,7 @@ const SignUp = () => {
           {termError && <ErrorMessage>동의를 확인하십시오.</ErrorMessage>}
         </div>
         <div style={{ marginTop: 10 }}>
-          <Button type="primary" htmlType="submit" loading={signUpLoading}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             가입하기
           </Button>
         </div>
@@ -142,24 +137,24 @@ const SignUp = () => {
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(
-  async (context) => {
-    const cookie = context.req ? context.req.headers.cookie : '';
-    axios.defaults.headers.Cookie = '';
-
-    if (context.req && cookie) {
-      axios.defaults.headers.Cookie = cookie;
-    }
-
-    context.store.dispatch({
-      type: LOAD_MY_INFO_REQUEST,
-    });
-    context.store.dispatch({
-      type: LOAD_POSTS_REQUEST,
-    });
-    context.store.dispatch(END);
-    await context.store.sagaTask.toPromise();
-  },
-);
+export const getServerSideProps = async (context) => {
+  const cookie = context.req ? context.req.headers.cookie : '';
+  axios.defaults.headers.Cookie = '';
+  if (context.req && cookie) {
+    axios.defaults.headers.Cookie = cookie;
+  }
+  const data = await loadMyInfoAPI();
+  if (!data) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};
 
 export default SignUp;
