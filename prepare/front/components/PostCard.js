@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import React, { createElement, useCallback, useState } from 'react';
-import { Avatar, Button, Card, Comment, List, Popover, Tooltip } from 'antd';
-=======
-import React, { useCallback, useEffect, useState } from 'react';
->>>>>>> c9c21a7... 좋아요 댓글 갯수
+import React, { useCallback, useState } from 'react';
 import {
   Avatar,
   Button,
@@ -14,22 +9,12 @@ import {
   Space,
   Tooltip,
 } from 'antd';
-import Icon, {
+import {
   EllipsisOutlined,
   LikeOutlined,
-<<<<<<< HEAD
   LikeTwoTone,
   MessageOutlined,
   RetweetOutlined,
-  DislikeFilled,
-  DislikeOutlined,
-  LikeFilled,
-=======
-  MessageOutlined,
-  RetweetOutlined,
-  HeartTwoTone,
-  LikeTwoTone,
->>>>>>> c9c21a7... 좋아요 댓글 갯수
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -38,7 +23,6 @@ import CommentForm from '~/components/CommentForm';
 import PostCardContent from '~/components/PostCardContent';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import {
-  LIKE_COMMENT_REQUEST,
   LIKE_POST_REQUEST,
   REMOVE_POST_REQUEST,
   RETWEET_REQUEST,
@@ -52,8 +36,6 @@ import PostImagesSlick from '~/components/PostImagesSlick';
 
 moment.locale('ko');
 
-<<<<<<< HEAD
-=======
 const IconText = ({ icon, text }) => (
   <Space>
     {React.createElement(icon)}
@@ -61,7 +43,6 @@ const IconText = ({ icon, text }) => (
   </Space>
 );
 
->>>>>>> c9c21a7... 좋아요 댓글 갯수
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
   const [commentFormOpen, setCommentFormOpen] = useState(false);
@@ -252,13 +233,9 @@ const PostCard = ({ post }) => {
                     editMode={editMode}
                     onChangePost={onChangePost}
                     onCancelUpdate={onCancelUpdate}
-<<<<<<< HEAD
                     postData={
                       post?.hide ? '삭제된 게시글 입니다' : post.content
                     }
-=======
-                    postData={post.content}
->>>>>>> c9c21a7... 좋아요 댓글 갯수
                   />
                 </>
               }
