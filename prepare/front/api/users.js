@@ -5,6 +5,11 @@ export async function loadMyInfoAPI() {
   return data;
 }
 
+export async function loadUserAPI(data) {
+  const { data } = await axios.get(`/user/${data}`);
+  return data;
+}
+
 export async function signUpAPI(data) {
   const { data } = await axios.post('/user', data);
   return data;
