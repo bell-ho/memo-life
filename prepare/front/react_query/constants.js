@@ -3,4 +3,5 @@ export const queryKeys = {
   posts: 'posts',
   followings: 'followings',
   followers: 'followers',
+  hashtag: 'hashtag',
 };
