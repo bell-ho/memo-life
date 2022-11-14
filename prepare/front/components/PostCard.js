@@ -300,26 +300,6 @@ const PostCard = ({ post }) => {
                             <span>{moment(item.createdAt).fromNow()}</span>
                           </Tooltip>
                         }
-                        // actions={[
-                        //   <Tooltip key="comment-basic-like" title="Like">
-                        //     <span onClick={() => onCommentLike(item.id)}>
-                        //       {createElement(
-                        //         action === 'liked' ? LikeFilled : LikeOutlined,
-                        //       )}
-                        //       <span className="comment-action">{likes}</span>
-                        //     </span>
-                        //   </Tooltip>,
-                        //   <Tooltip key="comment-basic-dislike" title="Dislike">
-                        //     <span onClick={dislike}>
-                        //       {React.createElement(
-                        //         action === 'disliked'
-                        //           ? DislikeFilled
-                        //           : DislikeOutlined,
-                        //       )}
-                        //       <span className="comment-action">{dislikes}</span>
-                        //     </span>
-                        //   </Tooltip>,
-                        //]}
                       />
                     </li>
                   );
