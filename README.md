@@ -91,3 +91,6 @@ getServerSideProps : 접속할 때 마다 접속한 상황에 따라 화면이 �
 
 # 0702
 saga 코드 react-query로 변경 진행
+
+# 1114
+react-query 컨버팅 완료 버그 수정 중
