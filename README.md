@@ -22,12 +22,12 @@ GIF Images
 
 ## 📚 기술스택
 
-| 분야           | 사용 기술                      | 비고 |
-| -------------- |----------------------------| ---- |
-| FrontEnd       | React, React-Query, javascript |
-| BackEnd        | Express                    |
-| Database       | MySql                      |
-| Cloud Services | AWS EC2, AWS S3            |
+| 분야           | 사용 기술                                      | 비고 |
+| -------------- |--------------------------------------------| ---- |
+| FrontEnd       | React, Redux-Saga, React-Query, javascript |
+| BackEnd        | Express                                    |
+| Database       | MySql                                      |
+| Cloud Services | AWS EC2, AWS S3                            |
 
 <br>
 
@@ -35,9 +35,16 @@ GIF Images
 
 ### 로그인, 로그아웃
 ### 게시글, 댓글 기능
-### 팔로우 기능
+### 팔로우,팔로잉 기능
 
 <br>
+
+## 후기
+처음으로 Next.js를 적용한 프로젝트라 배우는데 시간이 좀 걸렸지만 <br>
+이것저것 하고 싶은걸 많이 적용시키다보니 프로젝트가 끝날쯤엔 많이 늘어있는 모습에 뿌듯했다<br>
+Redux-Saga를 써서 전역 상태관리를 할땐 props-drilling이 줄어 들어 개발하기 편하다고 생각했지만 <br>
+계속 사용하다보니 상당한 코드량, 데이터 동기화의 번거로움, 비동기 데이터 상태코드 만들기등 <br>
+불편했던 점을 React-Query로 바꾸면서 다 개선해보니 훨씬 유지보수성이 좋은 프로젝트로 퀄리티를 올릴 수 있었다 <br>
 
 ## 작업 내역
 
@@ -85,22 +92,6 @@ GIF Images
   * next.js 적용
 * 05/28
   * 회원가입 기능 구현
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 후기
 
 <!-- Stack Icon Refernces -->
 
