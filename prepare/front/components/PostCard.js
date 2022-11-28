@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { createElement, useCallback, useState } from 'react';
 import {
   Avatar,
   Button,
@@ -34,6 +34,7 @@ import {
   unlikePostAPI,
   updatePostAPI,
 } from '~/api/posts';
+import axios from 'axios';
 
 moment.locale('ko');
 
@@ -71,6 +72,32 @@ const PostCard = ({ post }) => {
       queryClient.refetchQueries([queryKeys.posts]);
     },
   });
+
+  const commentLikeMutation = useMutation(
+    (params) => axios.patch(`/comment/${params}/like`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([queryKeys.posts]);
+      },
+    },
+  );
+
+  const commentLike = useCallback(async (params) => {
+    await commentLikeMutation.mutate(params);
+  }, []);
+
+  const commentUnLikeMutation = useMutation(
+    (params) => axios.delete(`/comment/${params}/like`),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([queryKeys.posts]);
+      },
+    },
+  );
+
+  const commentUnLike = useCallback(async (params) => {
+    await commentUnLikeMutation.mutate(params);
+  }, []);
 
   const unlikeMutation = useMutation(
     [queryKeys.posts, post.id],
@@ -161,6 +188,10 @@ const PostCard = ({ post }) => {
 
   const liked = post.Likers.find((v) => me?.id && v.id === me.id);
 
+  const commentLiked = post.Comments.map((v) =>
+    v.Comment_Likers.map((v) => Number(v.id)),
+  ).filter((v) => v.length);
+
   return (
     <div style={{ marginBottom: 20 }}>
       <Card
@@ -218,7 +249,7 @@ const PostCard = ({ post }) => {
         }
         extra={me?.id && <FollowButton post={post} />}
       >
-        {post.RetweetId && post.Retweet ? ( //리트윗 게시물
+        {post.RetweetId && post.Retweet ? ( // 리트윗 게시물
           <Card
             cover={
               !post?.Retweet.hide &&
@@ -283,34 +314,62 @@ const PostCard = ({ post }) => {
         )}
       </Card>
       {commentFormOpened && (
-        <div>
+        <>
           <CommentForm post={post} />
-          <List
-            header={`${post.Comments.length}개의 댓글`}
-            itemLayout="horizontal"
-            dataSource={post.Comments}
-            renderItem={(item) => (
-              <li>
-                <Comment
-                  author={item.User.nickname}
-                  avatar={
-                    <Link href={`/user/${item.User.id}`} prefetch={false}>
-                      <a>
-                        <Avatar>{item.User.nickname?.[0]}</Avatar>
-                      </a>
-                    </Link>
-                  }
-                  content={item.content}
-                  datetime={
-                    <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                      <span>{moment(item.createdAt).fromNow()}</span>
-                    </Tooltip>
-                  }
-                />
-              </li>
-            )}
-          />
-        </div>
+          <div
+            style={{
+              height: 300,
+              overflow: 'auto',
+            }}
+          >
+            <List
+              header={`${post.Comments.length}개의 댓글`}
+              itemLayout="horizontal"
+              dataSource={post.Comments}
+              renderItem={(item) => (
+                <li>
+                  <Comment
+                    author={item.User.nickname}
+                    avatar={
+                      <Link href={`/user/${item.User.id}`} prefetch={false}>
+                        <a>
+                          <Avatar>{item.User.nickname?.[0]}</Avatar>
+                        </a>
+                      </Link>
+                    }
+                    content={item.content}
+                    datetime={
+                      <Tooltip title={moment().format('YYYY-MM-DD')}>
+                        <span>{moment(item.createdAt).fromNow()}</span>
+                      </Tooltip>
+                    }
+                    actions={[
+                      <Tooltip key="comment-basic-like">
+                        {item?.Comment_Likers.map((v) => v.id).includes(
+                          me?.id,
+                        ) ? (
+                          <span onClick={() => commentUnLike(item.id)}>
+                            {<LikeTwoTone style={{ marginRight: 3 }} />}
+                            <span className="comment-action">
+                              {item?.Comment_Likers?.length}
+                            </span>
+                          </span>
+                        ) : (
+                          <span onClick={() => commentLike(item.id)}>
+                            {<LikeOutlined style={{ marginRight: 3 }} />}
+                            <span className="comment-action">
+                              {item?.Comment_Likers?.length}
+                            </span>
+                          </span>
+                        )}
+                      </Tooltip>,
+                    ]}
+                  />
+                </li>
+              )}
+            />
+          </div>
+        </>
       )}
     </div>
   );

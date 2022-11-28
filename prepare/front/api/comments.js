@@ -8,3 +8,8 @@ export const addCommentAPI = async (params) => {
   const { data } = await axios.post(`/post/${params.postId}/comment`, params);
   return data;
 };
+
+export const likeCommentAPI = async (params) => {
+  const { data } = await axios.patch(`/comment/${params}/like`);
+  return data;
+};
