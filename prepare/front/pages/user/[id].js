@@ -113,10 +113,10 @@ const User = () => {
       {mainPosts?.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
-      {/*<div*/}
-      {/*  ref={readToLoad ? ref : undefined}*/}
-      {/*  style={{ height: 50, backgroundColor: 'yellow' }}*/}
-      {/*/>*/}
+      <div
+        ref={readToLoad ? ref : undefined}
+        style={{ height: 50, backgroundColor: 'white' }}
+      />
     </AppLayout>
   );
 };

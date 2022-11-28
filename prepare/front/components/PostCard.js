@@ -1,5 +1,14 @@
 import React, { useCallback, useState } from 'react';
-import { Avatar, Button, Card, Comment, List, Popover, Space } from 'antd';
+import {
+  Avatar,
+  Button,
+  Card,
+  Comment,
+  List,
+  Popover,
+  Space,
+  Tooltip,
+} from 'antd';
 import {
   EllipsisOutlined,
   LikeOutlined,
@@ -292,6 +301,11 @@ const PostCard = ({ post }) => {
                     </Link>
                   }
                   content={item.content}
+                  datetime={
+                    <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                      <span>{moment(item.createdAt).fromNow()}</span>
+                    </Tooltip>
+                  }
                 />
               </li>
             )}

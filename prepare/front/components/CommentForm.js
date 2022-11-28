@@ -14,6 +14,11 @@ const CommentForm = ({ post }) => {
   const [commentText, onChangeCommentText, setCommentText] = useInput('');
   const queryClient = useQueryClient();
   const onSubmitComment = useCallback(() => {
+    if (!me) {
+      alert('로그인 해주세요.');
+      return;
+    }
+
     if (me) {
       if (!commentText || commentText === '') {
         alert('문자를 입력해주세요.');

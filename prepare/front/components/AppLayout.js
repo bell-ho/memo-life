@@ -53,7 +53,7 @@ const AppLayout = ({ children }) => {
           {
             label: (
               <Link href="/">
-                <a>개경일상</a>
+                <a>메모라이프</a>
               </Link>
             ),
             key: '/',
