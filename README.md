@@ -27,7 +27,7 @@ GIF Images
 | FrontEnd       | React, Redux-Saga, React-Query, javascript |
 | BackEnd        | Express                                    |
 | Database       | MySql                                      |
-| Cloud Services | AWS EC2, AWS S3                            |
+| Cloud Services | ~~AWS EC2, AWS S3~~                            |
 
 <br>
 
