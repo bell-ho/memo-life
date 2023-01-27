@@ -16,6 +16,16 @@ const SearchInput = styled(Input.Search)`
 `;
 
 const Global = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: Pretendard, NotoSansCJK-KR, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;;
+    border: none;
+    box-sizing: border-box;
+    background-color: transparent;
+  }
+
   .ant-row {
     margin-right: 0 !important;
     margin-left: 0 !important;
@@ -28,8 +38,15 @@ const Global = createGlobalStyle`
   .ant-col:last-child {
     padding-right: 0 !important;
   }
+
   .ant-comment-inner {
     padding: 5px 0;
+  }
+
+  @font-face {
+    font-family: Pretendard;
+    src: url('/fonts/Pretendard-Bold.otf');
+    font-weight: 600;
   }
 `;
 

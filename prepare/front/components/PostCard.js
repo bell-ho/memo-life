@@ -193,7 +193,7 @@ const PostCard = ({ post }) => {
   ).filter((v) => v.length);
 
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div style={{ marginBottom: 20, width: 500 }}>
       <Card
         cover={
           !post?.hide &&
