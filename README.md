@@ -7,7 +7,7 @@
 ## 🔖 소개
 > **일상 생활속 나만의 메모를 공유하는 프로젝트**
 
-![ANY_0313222123](https://user-images.githubusercontent.com/62537935/224714292-58f4f970-80bd-4503-ad65-867b5549d60a.gif)
+![ANY_0313222805](https://user-images.githubusercontent.com/62537935/224715686-621c3378-ab66-4645-bf23-57a2194dfda2.gif)
 
 <br>
 
