@@ -1,22 +1,22 @@
 # 메모라이프
 
 <p align="center">
-  <br>
-  <img src="./images/common/logo-sample.jpeg">
-  <br>
+  <img src="https://user-images.githubusercontent.com/62537935/224707418-ffce9274-7a11-474a-8ba9-2409b87d2f8f.png">
 </p>
-
-## 📒 목차
 
 ## 🔖 소개
+> **일상 생활속 나만의 메모를 공유하는 프로젝트**
 
-<p align="justify">
-프로젝트 개요/동기
-</p>
+![ANY_0313222123](https://user-images.githubusercontent.com/62537935/224714292-58f4f970-80bd-4503-ad65-867b5549d60a.gif)
 
-<p align="center">
-GIF Images
-</p>
+<br>
+
+## 구현 기능
+
+### 로그인, 로그아웃
+### 게시글, 댓글 기능
+### 팔로우, 팔로잉 기능
+### 리트윗 기능
 
 <br>
 
@@ -28,14 +28,6 @@ GIF Images
 | BackEnd        | Express                                    |
 | Database       | MySql                                      |
 | Cloud Services | ~~AWS EC2, AWS S3~~                            |
-
-<br>
-
-## 구현 기능
-
-### 로그인, 로그아웃
-### 게시글, 댓글 기능
-### 팔로우, 팔로잉 기능
 
 <br>
 
