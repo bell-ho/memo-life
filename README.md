@@ -1,5 +1,3 @@
-# 메모라이프
-
 <p align="center">
   <img src="https://user-images.githubusercontent.com/62537935/224707418-ffce9274-7a11-474a-8ba9-2409b87d2f8f.png">
 </p>
@@ -80,10 +78,3 @@
   * next.js 적용
 * 05/28
   * 회원가입 기능 구현
-
-<!-- Stack Icon Refernces -->
-
-[js]: /images/stack/javascript.svg
-[ts]: /images/stack/typescript.svg
-[react]: /images/stack/react.svg
-[node]: /images/stack/node.svg
