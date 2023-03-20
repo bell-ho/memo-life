@@ -4,8 +4,10 @@
 
 ## 🔖 소개
 > **나만의 메모를 공유하는 프로젝트**
-
-![ANY_0313222805](https://user-images.githubusercontent.com/62537935/224715686-621c3378-ab66-4645-bf23-57a2194dfda2.gif)
+> 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/62537935/224715686-621c3378-ab66-4645-bf23-57a2194dfda2.gif">
+</p>
 
 <br>
 
