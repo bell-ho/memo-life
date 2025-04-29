@@ -20,11 +20,18 @@
 
 <br>
 
+<br>
+
+## ERD
+![image](https://github.com/user-attachments/assets/e7f2012d-af81-447e-87a6-646a4c3fdc45)
+
+<br>
+
 ## 📚 기술스택
 
 | 분야           | 사용 기술                                      | 비고 |
 | -------------- |--------------------------------------------| ---- |
-| FrontEnd       | React, Redux-Saga, React-Query, javascript |
+| FrontEnd       | Next.js, React, Redux-Saga, React-Query, javascript |
 | BackEnd        | Express                                    |
 | Database       | MySql                                      |
 | Cloud Services | ~~AWS EC2, AWS S3~~                            |
